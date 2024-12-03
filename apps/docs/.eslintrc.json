@@ -1,0 +1,4 @@
+{
+  "root": true,
+  "extends": ["@components-ui/eslint-config/nuxt"]
+}

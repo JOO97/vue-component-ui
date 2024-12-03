@@ -1,0 +1,13 @@
+{
+  "name": "@components-ui/themes",
+  "version": "1.0.0",
+  "description": "",
+  "keywords": [],
+  "license": "ISC",
+  "author": "",
+  "main": "index.css",
+  "style": "index.css",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  }
+}

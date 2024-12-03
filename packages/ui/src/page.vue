@@ -128,9 +128,9 @@ const props = defineProps<{
     <div class="grid">
       <Card
         v-for="{ title, href, description } in LINKS"
+        :key="title"
         class="card"
         :href="href"
-        :key="title"
         :title="title"
       >
         {{ description }}

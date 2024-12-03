@@ -1,81 +1,111 @@
-# Turborepo VueJS/NuxtJS starter
+# vue-component-ui
 
-This is an official starter Turborepo.
+## Installation
 
-## Using this example
+1. monorepo项目基础代码框架
 
-Run the following command:
+> turbo
 
 ```sh
-npx create-turbo@latest -e with-vue-nuxt
+npx create-turbo@latest --example with-vue-nuxt
 ```
 
-## What's inside?
+````c#
+my-component-library/
+├── packages/                   # Monorepo 下的各个包
+│   ├── components/             # 组件包
+│   │   ├── input/              # 存放各个组件的文件夹
+│   │   │   ├── src/
+│   │   │   │   ├──  input/
+│   │   │   └── index.ts        # 组件入口文件
+│   │   ├── package.json
+│   │   └── index.ts            # 组件入口
+│   ├── utils/                  # 公用工具包
+│   │   ├── src/
+│   │   │   └── index.ts
+│   │   ├── package.json
+│   │   └── tsconfig.json
+│   ├── types/                  # 类型定义包
+│   │   ├── src/
+│   │   │   └── index.d.ts
+│   │   ├── package.json
+│   │   └── tsconfig.json
+├── scripts/                    # 构建工具、自动化脚本
+│   ├── build.ts                # 构建脚本
+│   ├── release.ts              # 发布脚本
+│   └── dev.ts                  # 本地开发启动脚本
+├── public/                     # 存放静态文件
+├── demo/                       # 组件库的演示项目
+├── .gitignore
+├── package.json
+├── pnpm-workspace.yaml         # pnpm monorepo 配置
+├── tsconfig.json               # 根级 TypeScript 配置
+└── vite.config.ts              # Vite 配置
+````
 
-This Turborepo includes the following packages/apps:
+2. 引入工作空间内的包
 
-### Apps and Packages
-
-- `docs`: a [Nuxt](https://nuxt.com/) app
-- `web`: another [Vue3](https://vuejs.org/) app
-- `ui`: a stub Vue component library shared by both `web` and `docs` applications
-- `eslint-config-custom`: `eslint` configurations (includes `@nuxtjs/eslint-config-typescript` and `@vue/eslint-config-typescript`)
-- `tsconfig`: `tsconfig.json`s used throughout the monorepo
-
-Each package/app is 100% [TypeScript](https://www.typescriptlang.org/).
-
-### Utilities
-
-This Turborepo has some additional tools already setup for you:
-
-- [TypeScript](https://www.typescriptlang.org/) for static type checking
-- [ESLint](https://eslint.org/) for code linting
-- [Prettier](https://prettier.io) for code formatting
-
-### Build
-
-To build all apps and packages, run the following command:
-
-```
-cd my-turborepo
-pnpm build
-```
-
-### Develop
-
-To develop all apps and packages, run the following command:
-
-```
-cd my-turborepo
-pnpm dev
-```
-
-### Remote Caching
-
-Turborepo can use a technique known as [Remote Caching](https://turbo.build/repo/docs/core-concepts/remote-caching) to share cache artifacts across machines, enabling you to share build caches with your team and CI/CD pipelines.
-
-By default, Turborepo will cache locally. To enable Remote Caching you will need an account with Vercel. If you don't have an account you can [create one](https://vercel.com/signup), then enter the following commands:
-
-```
-cd my-turborepo
-npx turbo login
+```sh
+# 根目录底下 或手动加到package.json 然后 pnpm install
+pnpm add @component-ui/components --workspace-root 
+# 其他子目录
+pnpm add @component-ui/utils --workspace
 ```
 
-This will authenticate the Turborepo CLI with your [Vercel account](https://vercel.com/docs/concepts/personal-accounts/overview).
-
-Next, you can link your Turborepo to your Remote Cache by running the following command from the root of your Turborepo:
-
+```JSON
+{
+  "devDependencies": {
+    "@components-ui/components": "workspace:^",
+    "@components-ui/hooks": "workspace:^",
+    "@components-ui/utils": "workspace:^",
+    "@components-ui/themes": "workspace:^"
+  }
+}
 ```
-npx turbo link
+
+3. 各种lint
+
+**eslint**
+
+```sh
+# /packages/eslint-config
+pnpm install eslint 
 ```
 
-## Useful Links
+```json
+//.eslintrc.json
+{
+  "root": true,
+  "extends": ["@components-ui/eslint-config"]
+}
+//.eslintignore
+```
 
-Learn more about the power of Turborepo:
+**[commitlint](https://commitlint.js.org/guides/getting-started.html)** 
 
-- [Tasks](https://turbo.build/repo/docs/core-concepts/monorepos/running-tasks)
-- [Caching](https://turbo.build/repo/docs/core-concepts/caching)
-- [Remote Caching](https://turbo.build/repo/docs/core-concepts/remote-caching)
-- [Filtering](https://turbo.build/repo/docs/core-concepts/monorepos/filtering)
-- [Configuration Options](https://turbo.build/repo/docs/reference/configuration)
-- [CLI Usage](https://turbo.build/repo/docs/reference/command-line-reference)
+```sh
+pnpm add --save-dev @commitlint/{cli,config-conventional} husky
+```
+
+> husky - Husky 是一个 Git 钩子管理工具，它可以在 Git 提交时自动运行 Commitlint。
+>
+> `pre-commit` 钩子在执行 `git commit` 命令时触发，**在提交信息输入之前**，即在用户进行实际提交之前。主要用于执行一些在提交前需要完成的操作，例如代码格式化、代码检查（如 ESLint、Prettier）、单元测试等。这些操作是确保代码质量的一个环节，防止提交不符合要求的代码。
+>
+> `commit-msg` 钩子会在你输入提交信息并且 Git 生成提交时触发，**在提交信息输入后**，即在你写好提交信息并提交时，`commit-msg` 钩子会验证这个提交信息。主要目的是检查提交信息是否符合规定的格式规范。
+
+```sh
+npx husky install
+npx husky add .husky/commit-msg "npx --no-install commitlint --edit $1"
+# lint-staged - 检查git暂存区的文件(执行git add后的文件)
+npx husky add .husky/pre-commit "pnpm exec lint-staged"
+```
+
+**git-cz**
+
+```SH
+# 全局安装 使用cz 或 git cz命令调用
+npm install -g commitizen
+# 项目中
+pnpm install -D cz-git 
+```
+

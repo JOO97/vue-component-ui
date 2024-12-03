@@ -1,4 +1,8 @@
-import { createApp } from "vue";
-import App from "./app.vue";
+import { createApp } from 'vue'
+import VIInput from '@components-ui/components/input'
+import '@components-ui/themes/src/index.scss'
+import App from './app.vue'
 
-createApp(App).mount("#app");
+const app = createApp(App)
+app.use(VIInput)
+app.mount('#app')

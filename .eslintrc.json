@@ -1,0 +1,11 @@
+{
+  "root": true,
+  "extends": ["@components-ui/eslint-config"],
+  "ignorePatterns": [
+    "node_modules/",
+    "dist/",
+    ".eslintrc.cjs",
+    "nuxt.config.ts",
+    "apps/"
+  ]
+}
