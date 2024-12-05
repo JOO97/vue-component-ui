@@ -241,7 +241,7 @@ pnpm add ts-node -D -w
 pnpm add @esbuild-kit/cjs-loader -D -w
 ```
 
-**rollup**
+### **rollup**
 
 > 默认 只认识标准的 JavaScript 文件（ESM 格式）
 >
@@ -255,15 +255,102 @@ pnpm add @esbuild-kit/cjs-loader -D -w
 > - 代码优化阶段：
 >   - 压缩和代码替换操作如 `esbuild`、`terser`。
 
-- typescript
-
-> @rollup/plugin-typescript` 或 `rollup-plugin-esbuild
-
-
+````js
+// inputOptions
+const bundle = await rollup({
+    input: resolve(compRoot, 'index.ts'),
+    /* 排除不需要被打包的 依赖包 */
+    external: (id: string) => id.startsWith('vue'),
+    /* rollup默认只认识js(es module) */
+    plugins: [
+      DefineOptions(), // 1. 插入额外的选项（Vue 插件配置依赖这个插件）
+      vue({ isProduction: true }), // 2. 处理 .vue 文件
+      vueJsx(), // 3. 处理 JSX 语法，Vue 插件输出的 JSX 内容需要它解析
+      // 4. 解析模块依赖
+      // NOTE: Rollup 在没有插件的情况下，只能直接打包相对路径（如 ./module.js）或绝对路径的模块。
+      // nodeResolve 插件的作用是：
+      //自动解析第三方库依赖（如 node_modules 中的包）。
+      //支持无后缀的模块文件加载（如 import './module' 自动匹配 module.js 或 module/index.js）。
+      nodeResolve({
+        extensions: ['.mjs', '.js', '.json', '.ts']
+      }),
+      commonjs(), // 5. 将 CommonJS 转换为 ESM，确保支持老式模块
+      postcss(), // 6. 处理 CSS 文件，确保样式能正确加载
+      // 7. NOTE: esbuild 放在最后的原因：确保其他插件完成依赖解析和预处理后，
+      // esbuild 负责 TypeScript 编译、压缩和代码替换的最终处理。
+      // esbuild不支持ts类型检查(需要严格的类型检查，可以结合 tsc 或 @rollup/plugin-typescript)
+      esbuild({
+        minify,
+        sourceMap: minify,
+        target: 'es2016',
+        loaders: {
+          '.vue': 'ts' //将 .vue 文件中包含的 TypeScript 内容编译成 JavaScript。
+        },
+        define: {
+          'process.env.NODE_ENV': '"production"'
+        }
+      })
+    ]
+  })
+// outputOptions
+  await Promise.all([
+    //es
+    bundle.write({
+      format: 'es',
+      file: resolve(
+        buildOutput,
+        'dist',
+        `index.full.${minify ? 'min.' : ''}mjs`
+      ),
+      banner: PKG_BANNER,
+      sourcemap: minify
+    }),
+    //umd
+    bundle.write({
+      name: PKG_NAME, // 挂载到全局的变量名
+      format: 'umd',
+      file: resolve(
+        buildOutput,
+        'dist',
+        `index.full.${minify ? 'min.' : ''}js`
+      ),
+      banner: PKG_BANNER,
+      sourcemap: minify,
+      // 依赖的全局变量
+      globals: {
+        vue: 'Vue'
+      },
+      //决定导出的模块成员类型
+      exports: 'named' //明确模块会导出多个具名成员
+    })
+  ])
+````
 
 > **Node.js 对 ES 模块的处理**：Node.js 默认对 `.js` 文件使用 CommonJS 模块解析方式。因此，使用 `.mjs` 扩展名能够让 Node.js 明确识别文件是 ESM 格式，避免解析错误。
 >
 > **浏览器**：浏览器对 ES 模块的支持通常基于 `<script type="module">` 标签，而 ES 模块的文件一般使用 `.mjs` 扩展名，或者在现代浏览器中通过 `type="module"` 来加载 `.js` 文件。
+
+### sass打包
+
+```TS
+import dartSass from 'sass'
+import gulpSass from 'gulp-sass'
+import autoprefixer from 'gulp-autoprefixer'
+import cleanCss from 'gulp-clean-css'
+
+const compile = () => {
+  const sass = gulpSass(dartSass)
+  return src(resolve(__dirname, './src/*.scss'))
+    .pipe(sass.sync())
+    .pipe(autoprefixer())
+    .pipe(cleanCss())
+    .pipe(dest('./dist'))
+}
+```
+
+### type
+
+### publish
 
 
 

@@ -24,10 +24,10 @@ const compile = () => {
 const copyFont = function () {
   return src(resolve(__dirname, './src/fonts/**')).pipe(dest('./dist/fonts'))
 }
-// const copyFullStyle = function () {
-//   return src(resolve(__dirname, './dist/**')).pipe(
-//     dest(resolve(__dirname, '../../dist/themes'))
-//   )
-// }
+const copyFullStyle = function () {
+  return src(resolve(__dirname, './dist/**')).pipe(
+    dest(resolve(__dirname, '../../dist/themes'))
+  )
+}
 
-export default series(compile, copyFont)
+export default series(compile, copyFont, copyFullStyle)
