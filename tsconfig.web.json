@@ -9,7 +9,7 @@
     "lib": ["ES2018", "DOM", "DOM.Iterable"],
     "skipLibCheck": true
   },
-  "include": ["packages", "types/env.d.ts", "types"],
+  "include": ["packages", "types"],
   "exclude": [
     "node_modules",
     "**/dist",

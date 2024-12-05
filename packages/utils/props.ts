@@ -28,7 +28,10 @@ export const createUUID = (prefix = n()) => {
  * @param opt 新对象
  * @param defaultOpt 默认对象
  */
-export const mergeOptions = (opt, defaultOpt) => {
+export const mergeOptions = (
+  opt: Record<string, any>,
+  defaultOpt: Record<string, any>
+) => {
   if (!opt) return defaultOpt
   return defaultsDeep({}, opt || {}, defaultOpt)
 }
@@ -37,7 +40,7 @@ export const mergeOptions = (opt, defaultOpt) => {
  * 深度合并对象
  * @param ...param 合并对象
  */
-export const deepAssign = (...param) => {
+export const deepAssign = (...param: any[]) => {
   const result = Object.assign({}, ...param)
   for (const item of param) {
     for (const [idx, val] of Object.entries(item)) {
@@ -98,13 +101,13 @@ export interface IObjectArr {
 export interface IFilterFn {
   (data: IObjectArr[]): IObjectArr[]
 }
-export const obj2Array = (obj: object, pKey: string = ''): IObjectArr[] => {
-  if (!isObject(obj) && !isArray(obj)) {
-    return []
-  }
-
+export const obj2Array = (
+  obj: Record<string, any>,
+  pKey: string = ''
+): IObjectArr[] => {
+  if (!isObject(obj) && !isArray(obj)) return []
   const arr: IObjectArr[] = Object.keys(obj).map((key) => ({
-    key,
+    key: key as keyof typeof obj,
     pKey,
     isParent: false,
     value: ''
@@ -129,7 +132,7 @@ export const obj2Array = (obj: object, pKey: string = ''): IObjectArr[] => {
  * @param filterFn 结果处理回调
  */
 export const setStyleProperty = (
-  source,
+  source: Record<string, any>,
   el: HTMLElement,
   keys: string[] = [],
   filterFn: IFilterFn | undefined = undefined
@@ -138,7 +141,7 @@ export const setStyleProperty = (
   if (!isElement(el)) throw new TypeError(`el is ${el}`)
   if (!isArray(keys)) throw new TypeError(`keys is not an array`)
 
-  const target = {}
+  const target: Record<string, any> = {}
   if (!keys.length) keys = Object.keys(source)
   keys.forEach((key) => {
     if (source.hasOwnProperty(key)) target[key] = source[key]
@@ -169,26 +172,29 @@ export const setStyleProperty = (
  * 过滤styleProps
  * 根据对象中的show、type字段进行过滤
  */
-export const filterStyleProperty = (source: object) => {
+export const filterStyleProperty = (
+  source: Record<string, any> & {
+    show?: boolean
+  }
+) => {
   if (!(isObject(source) && !isArray(source))) return source
-
-  const r = {}
+  const r: Record<string, any> = {}
   Object.keys(source).forEach((key) => {
-    const value = source[key]
+    const value = source[key] as Record<string, any> & {
+      show?: boolean
+    }
     //value为对象时, 递归处理
     if (isObject(value) && !isArray(value)) {
-      let r2 = {}
+      let r2: Record<string, any> = {}
       //show: 当前项中有show字段且show字段为false则丢弃当前配置项
-      if (isBoolean(value['show']) && !value['show']) return
-      else if (value['type']) {
+      if (isBoolean(value.show) && !value.show) return
+      else if (value.type) {
         Object.keys(value).forEach((tKey) => {
           //只保留show、type、value['type']对应项
           if (!['show', 'type', value['type']].includes(tKey)) return
           r2[tKey] = filterStyleProperty(value[tKey])
         })
-      } else {
-        r2 = filterStyleProperty(value)
-      }
+      } else r2 = filterStyleProperty(value)
       if (Object.keys(r2).length) r[key] = r2
     } else r[key] = value
   })
@@ -200,7 +206,10 @@ export const filterStyleProperty = (source: object) => {
  * @param options
  * @param el
  */
-export const clearStyleProperty = (options, el: HTMLElement) => {
+export const clearStyleProperty = (
+  options: Record<string, any>,
+  el: HTMLElement
+) => {
   if (!isElement(el)) throw new TypeError(`el is ${el}`)
   const optionsArr = obj2Array(options).filter(
     (item) =>
@@ -222,7 +231,7 @@ export const clearStyleProperty = (options, el: HTMLElement) => {
 export const getValueByKeyStr = (
   key: string,
   suffixKey: string = 'show',
-  source: object = {}
+  source: Record<string, any> = {}
 ) => {
   source = source ?? {}
   const keys = key.split('.').filter((k) => k)
@@ -247,13 +256,16 @@ export const getValueByKeyStr = (
  * @param source 源对象
  * @param comparison 对比对象
  */
-export const findDiff = (source: object = {}, comparison: object = {}) => {
+export const findDiff = (
+  source: Record<string, any> = {},
+  comparison: Record<string, any> = {}
+) => {
   if (!isObject(source) || !isObject(comparison)) {
     console.error('source or comparison is not an object')
     return null
   }
 
-  const diff = {}
+  const diff: Record<string, any> = {}
   let vChildren
 
   for (const key in source) {
