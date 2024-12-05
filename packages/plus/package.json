@@ -1,13 +1,12 @@
 {
-  "name": "@components-ui/components",
+  "name": "@components-ui/plus",
   "version": "1.0.0",
   "description": "",
   "keywords": [],
   "license": "ISC",
   "author": "",
-  "main": "./index.ts",
+  "main": "index.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "dependencies": {}
+  }
 }

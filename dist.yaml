@@ -1,0 +1,13 @@
+dist:
+  - components-ui:
+      - dist: 全量打包
+          - index.full.js
+          - index.full.min.js
+          - index.full.min.js.map
+          - index.full.mjs
+          - index.full.min.mjs
+          - index.full.min.mjs.map
+          - index.css
+      - es: es
+      - lib:
+      - themes

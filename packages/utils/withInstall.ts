@@ -1,3 +1,6 @@
+/**
+ * 将组件注册为vue插件形式 提供install方法
+ */
 import type { App, Plugin } from 'vue'; // 只导入类型，而不是导入值
 // T：泛型,类型必段导出否则生成不了.d.ts文件
 export type SFCWidthInstall<T> = T & Plugin; // T & Plugin交集运算

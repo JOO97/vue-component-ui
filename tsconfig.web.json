@@ -3,14 +3,18 @@
   "compilerOptions": {
     "composite": true,
     "jsx": "preserve",
+    "jsxFactory": "h",
+    "jsxFragmentFactory": "Fragment",
+    "types": [],
     "lib": ["ES2018", "DOM", "DOM.Iterable"],
     "skipLibCheck": true
   },
-  "include": ["packages", "typings/env.d.ts"],
+  "include": ["packages", "types/env.d.ts", "types"],
   "exclude": [
     "node_modules",
     "**/dist",
-    "**/__tests__/**/*",
+    // "**/__tests__/**/*",
+    // "**/__tests__",
     "**/gulpfile.ts",
     "**/*.md"
   ]

@@ -11,16 +11,13 @@
     "postinstall": "nuxt prepare",
     "lint": "eslint ."
   },
-  "dependencies": {
-    "ui": "workspace:*"
-  },
   "devDependencies": {
+    "@components-ui/tsconfig": "workspace:^",
     "@components-ui/eslint-config": "workspace:^",
     "@nuxt/devtools": "latest",
     "@nuxtjs/eslint-config-typescript": "^12.1.0",
     "eslint": "^8.57.0",
     "nuxt": "^3.10.3",
-    "tsconfig": "workspace:*",
     "vue": "^3.4.21",
     "vue-router": "^4.3.0"
   }

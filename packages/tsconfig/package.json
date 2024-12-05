@@ -1,6 +1,6 @@
 {
-  "name": "tsconfig",
-  "version": "0.0.0",
+  "name": "@components-ui/tsconfig",
+  "version": "0.0.1",
   "license": "MIT",
   "publishConfig": {
     "access": "public"
